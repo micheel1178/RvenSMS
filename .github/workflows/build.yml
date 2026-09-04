@@ -11,13 +11,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build with Buildozer
-      uses: kivy/buildozer-action@master
-      with:
-        filename: buildozer.spec
-        release: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf automake libtool pkg-config zlib1g-dev libffi-dev libssl-dev
+        pip3 install --upgrade pip buildozer cython
+
+    - name: Build APK with Buildozer
+      run: |
+        buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
